@@ -1,11 +1,18 @@
-import launch
-import launch_ros.actions
+from launch import LaunchDescription
 from launch_ros.actions import ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
-
+from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
 
 def generate_launch_description():
-    use_sim_time = True
+    use_sim_time = LaunchConfiguration("use_sim_time")
+
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        name="use_sim_time",
+        default_value="True",
+        description="Use simulation (Gazebo) clock if true",
+    )
+
     container = ComposableNodeContainer(
         name='pointcloud_processing_container',
         namespace='filtered_pcl',
@@ -14,8 +21,8 @@ def generate_launch_description():
         composable_node_descriptions=[
             ComposableNode(
                 package='pcl_utils',
-                plugin='pcl_utils::IndexFilter',
-                name='index_filter_rear',
+                plugin='pcl_utils::FOVFilter',
+                name='fov_filter_rear',
                 parameters=[
                     {'input_topic': '/rear/rslidar_points'},
                     {'output_topic': '/filtered_cloud_rear'},
@@ -32,8 +39,8 @@ def generate_launch_description():
             ),
             ComposableNode(
                 package='pcl_utils',
-                plugin='pcl_utils::IndexFilter',
-                name='index_filter_front',
+                plugin='pcl_utils::FOVFilter',
+                name='fov_filter_front',
                 parameters=[
                     {'input_topic': '/front/rslidar_points'},
                     {'output_topic': '/filtered_cloud_front'},
@@ -64,8 +71,6 @@ def generate_launch_description():
                 package='pcl_utils',
                 plugin='pcl_utils::CropBox',
                 name='crop_box_filter_node',
-                # Example remappings:
-                # remappings=[('input', '/input_cloud'), ('output', '/filtered_cloud')],
                 parameters=[
                     {   'input_topic': '/base/rslidar_points',
                         'output_topic': '/cloud',
@@ -79,9 +84,25 @@ def generate_launch_description():
                         "use_sim_time": use_sim_time,
                     }
                 ]
-            )
+            ),
+            # ComposableNode(
+            #     package='pcl_utils',
+            #     plugin='pcl_utils::VoxelGridFilter',
+            #     name='voxelgrid_filter_node',
+            #     parameters=[
+            #         {   'input_topic': '/cloud_no_floor',
+            #             'output_topic': '/cloud',
+            #             'voxel_size': 0.2,
+            #             "use_sim_time": use_sim_time,
+            #         }
+            #     ]
+            # )
         ],
         output='screen'
     )
 
-    return launch.LaunchDescription([container])
+    ld = LaunchDescription()
+    ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(container)
+
+    return ld

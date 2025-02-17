@@ -115,10 +115,10 @@ pcl::PointIndices mergePointIndices(const pcl::PointIndices& indices1, const pcl
 
 namespace pcl_utils
 {
-    class IndexFilter : public rclcpp::Node
+    class FOVFilter : public rclcpp::Node
     {
     public:
-        explicit IndexFilter(const rclcpp::NodeOptions &options)
+        explicit FOVFilter(const rclcpp::NodeOptions &options)
             : Node("index_filter_node", options)
         {
             declare_parameters();
@@ -127,12 +127,12 @@ namespace pcl_utils
             // Subscriber to the raw PointCloud2 topic
             cloud_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
                 input_topic_, rclcpp::SensorDataQoS(),
-                std::bind(&IndexFilter::cloud_callback, this, std::placeholders::_1));
+                std::bind(&FOVFilter::cloud_callback, this, std::placeholders::_1));
 
             // Publisher for the filtered PointCloud2
             cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(output_topic_, 10);
 
-            RCLCPP_INFO(this->get_logger(), "IndexFilter Node started! Using pcl::ExtractIndices.");
+            RCLCPP_INFO(this->get_logger(), "FOVFilter Node started! Using pcl::ExtractIndices.");
 
             indices = pcl::PointIndices::Ptr(new pcl::PointIndices());
 
@@ -252,4 +252,4 @@ namespace pcl_utils
 } // namespace pcl_utils
 
 #include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(pcl_utils::IndexFilter)
+RCLCPP_COMPONENTS_REGISTER_NODE(pcl_utils::FOVFilter)

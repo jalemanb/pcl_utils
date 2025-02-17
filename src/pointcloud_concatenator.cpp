@@ -100,7 +100,7 @@ private:
       return;
     }
 
-    // Convert back to ROS
+    // COncatenate both pointclouds
     pcl::concatenatePointCloud(pcl_tf1, pcl_tf2, pcl_out);
     pcl_out.header.frame_id = output_frame_;
     pcl_out.header.stamp    = this->now();

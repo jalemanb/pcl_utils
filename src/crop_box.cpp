@@ -35,6 +35,13 @@ namespace pcl_utils
             this->get_parameter("zmax", zmax_);
             this->get_parameter("negative", negative_);
 
+            // Setting up the Crop-Box filter parameters
+            Eigen::Vector4f min_point(xmin_, ymin_, zmin_, 1.0);
+            Eigen::Vector4f max_point(xmax_, ymax_, zmax_, 1.0);
+            crop_filter.setMin(min_point);
+            crop_filter.setMax(max_point);
+            crop_filter.setNegative(negative_);  // Keep points inside or outside
+
             // Subscriber & Publisher
             cloud_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
                 input_topic_, rclcpp::SensorDataQoS(),
@@ -58,15 +65,7 @@ namespace pcl_utils
             // Print the minimum Y value
             RCLCPP_INFO(this->get_logger(), "Min Z value: %f", min_pt.z);
 
-
-            pcl::CropBox<pcl::PCLPointCloud2> crop_filter;
             crop_filter.setInputCloud(pcl_cloud);
-
-            Eigen::Vector4f min_point(xmin_, ymin_, zmin_, 1.0);
-            Eigen::Vector4f max_point(xmax_, ymax_, zmax_, 1.0);
-            crop_filter.setMin(min_point);
-            crop_filter.setMax(max_point);
-            crop_filter.setNegative(negative_);  // Keep points inside or outside
 
             pcl::PCLPointCloud2::Ptr cropped_cloud(new pcl::PCLPointCloud2());
             crop_filter.filter(*cropped_cloud);
@@ -84,6 +83,9 @@ namespace pcl_utils
         std::string output_topic_;
         double xmin_, ymin_, zmin_, xmax_, ymax_, zmax_;
         bool negative_;
+
+        // Cropbox Filter
+        pcl::CropBox<pcl::PCLPointCloud2> crop_filter;
 
         // ROS 2 Communication
         rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_sub_;
