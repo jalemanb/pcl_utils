@@ -62,8 +62,6 @@ namespace pcl_utils
             pcl::fromPCLPointCloud2(*pcl_cloud, *xyz_cloud);
             pcl::PointXYZ min_pt, max_pt;
             pcl::getMinMax3D(*xyz_cloud, min_pt, max_pt);
-            // Print the minimum Y value
-            RCLCPP_INFO(this->get_logger(), "Min Z value: %f", min_pt.z);
 
             crop_filter.setInputCloud(pcl_cloud);
 

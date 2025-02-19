@@ -223,7 +223,7 @@ namespace pcl_utils
             auto duration_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
             // Print execution time
-            RCLCPP_INFO(this->get_logger(), "Filter execution time: %ld µs (%ld ms)", duration_microseconds, duration_milliseconds);
+            // RCLCPP_INFO(this->get_logger(), "Filter execution time: %ld µs (%ld ms)", duration_microseconds, duration_milliseconds);
 
             // Convert back to ROS2 message
             sensor_msgs::msg::PointCloud2 output_msg;

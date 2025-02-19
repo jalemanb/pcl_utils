@@ -108,8 +108,7 @@ private:
     // Publish
     pub_->publish(pcl_out);
 
-    RCLCPP_INFO(this->get_logger(),
-                "Published concatenated pointcloud");
+    // RCLCPP_INFO(this->get_logger(),"Published concatenated pointcloud");
   }
 
   // Parameters
